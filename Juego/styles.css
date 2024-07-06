@@ -1,0 +1,35 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0;
+    text-align: center;
+    padding: 20px;
+}
+
+.container {
+    max-width: 90%; /* Ajuste para pantallas móviles */
+    margin: 20px auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.puzzle-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 20px;
+    overflow: hidden; /* Para ocultar las partes de la imagen fuera del contenedor */
+}
+
+.puzzle-piece {
+    width: calc(33.33% - 10px); /* Ancho adaptativo para 3 piezas por fila */
+    height: auto; /* Altura ajustada automáticamente */
+    background-image: url('foto.jpg'); /* Ruta a la imagen */
+    background-size: 100% auto; /* Tamaño total de la imagen */
+    background-repeat: no-repeat;
+    border: 2px solid #fff; /* Borde blanco entre las piezas */
+    box-sizing: border-box;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
