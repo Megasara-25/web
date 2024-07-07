@@ -14,6 +14,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            min-height: 100vh;
         }
         .container {
             background-color: #fff;
@@ -21,11 +22,12 @@
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             margin: 20px;
-            width: 80%;
+            width: 90%;
             max-width: 600px;
         }
         h1 {
             color: #ff6347;
+            text-align: center;
         }
         .clue {
             margin-bottom: 15px;
@@ -60,22 +62,26 @@
             cursor: not-allowed;
         }
         #puzzle {
-            width: 400px;
+            width: 100%;
+            max-width: 400px;
             height: 400px;
             display: flex;
             flex-wrap: wrap;
             border: 2px solid #000;
             margin-bottom: 20px;
+            position: relative;
         }
         .piece {
-            width: 100px;
-            height: 100px;
+            width: 25%;
+            height: 25%;
             box-sizing: border-box;
             border: 1px solid #fff;
             background-size: 400px 400px;
+            position: absolute;
         }
         #maze {
-            width: 400px;
+            width: 100%;
+            max-width: 400px;
             height: 400px;
             position: relative;
             border: 2px solid #000;
@@ -83,8 +89,8 @@
             margin-top: 20px;
         }
         .maze-cell {
-            width: 40px;
-            height: 40px;
+            width: 10%;
+            height: 10%;
             box-sizing: border-box;
             float: left;
         }
@@ -101,8 +107,8 @@
             background-color: #f00;
         }
         #player {
-            width: 40px;
-            height: 40px;
+            width: 10%;
+            height: 10%;
             background-color: #00f;
             position: absolute;
             top: 0;
@@ -142,6 +148,16 @@
             top: 0;
             left: 50px;
         }
+        @media (max-width: 600px) {
+            #puzzle, #maze {
+                height: auto;
+                flex-direction: column;
+            }
+            .piece, #player {
+                width: 100%;
+                height: auto;
+            }
+        }
     </style>
 </head>
 <body>
@@ -173,7 +189,6 @@
             <h2>Pista 4</h2>
             <p>Has encontrado el tesoro.</p>
             <div id="reward">
-                
                 <div id="heart"></div>
             </div>
         </div>
@@ -214,19 +229,57 @@
         const pieceCount = 16;
         const image = 'pinguino.jpg';
         
+        let positions = [];
+        for (let i = 0; i < pieceCount; i++) {
+            positions.push(i);
+        }
+
         for (let i = 0; i < pieceCount; i++) {
             const piece = document.createElement('div');
             piece.classList.add('piece');
             piece.style.backgroundImage = `url(${image})`;
             piece.style.backgroundPosition = `${(i % 4) * -100}px ${Math.floor(i / 4) * -100}px`;
+            piece.draggable = true;
+            piece.id = `piece${i}`;
             puzzle.appendChild(piece);
         }
 
         function shuffle() {
-            for (let i = puzzle.children.length; i >= 0; i--) {
-                puzzle.appendChild(puzzle.children[Math.random() * i | 0]);
-            }
+            const shuffledPositions = positions.slice().sort(() => Math.random() - 0.5);
+            puzzle.childNodes.forEach((piece, index) => {
+                const position = shuffledPositions[index];
+                piece.style.top = `${Math.floor(position / 4) * 25}%`;
+                piece.style.left = `${(position % 4) * 25}%`;
+            });
         }
+
+        shuffle();
+
+        let draggedPiece = null;
+
+        document.addEventListener('dragstart', (e) => {
+            if (e.target.classList.contains('piece')) {
+                draggedPiece = e.target;
+            }
+        });
+
+        document.addEventListener('dragover', (e) => {
+            e.preventDefault();
+        });
+
+        document.addEventListener('drop', (e) => {
+            if (e.target.classList.contains('piece') && draggedPiece) {
+                const draggedStyle = window.getComputedStyle(draggedPiece);
+                const targetStyle = window.getComputedStyle(e.target);
+                const draggedLeft = draggedStyle.left;
+                const draggedTop = draggedStyle.top;
+                draggedPiece.style.left = targetStyle.left;
+                draggedPiece.style.top = targetStyle.top;
+                e.target.style.left = draggedLeft;
+                e.target.style.top = draggedTop;
+                draggedPiece = null;
+            }
+        });
 
         // Laberinto
         const maze = [
